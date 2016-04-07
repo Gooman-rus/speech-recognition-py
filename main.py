@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
+# import sys
 from ctypes import *
 from contextlib import contextmanager
 
@@ -13,14 +13,14 @@ from sphinxbase.sphinxbase import *
 from execute import speech_exec
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-model_dir = "/home/yura/practics/"
+model_dir = '/home/yura/practics/'
 
-hmm = os.path.join(model_dir, "zero_ru_cont_8k_v3/zero_ru.cd_cont_4000")
-#lm = os.path.join(model_dir, "speech_reconginition_project/lmbase.lm.DMP")
-dict = os.path.join(model_dir, "speech_reconginition_project/words.dict")
-fsg_gram = os.path.join(model_dir, "speech_reconginition_project/gram.fsg")
+hmm = os.path.join(model_dir, 'zero_ru_cont_8k_v3/zero_ru.cd_cont_4000')
+# lm = os.path.join(model_dir, "speech_reconginition_project/lmbase.lm.DMP")
+dict = os.path.join(model_dir, 'speech_reconginition_project/words.dict')
+fsg_gram = os.path.join(model_dir, 'speech_reconginition_project/gram.fsg')
 
-#sys.stderr = open(os.path.join(script_dir, "stderr.log"), "a")
+# sys.stderr = open(os.path.join(script_dir, "stderr.log"), "a")
 
 ERROR_HANDLER_FUNC = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
 
@@ -51,8 +51,8 @@ fsg = jsgf.build_fsg(rule, decoder.get_logmath(), 7.5)
 fsg.writefile(fsg_gram)
 config.set_string('-fsg', fsg_gram)
 
-decoder.set_fsg("mygrammar", fsg)
-decoder.set_search("mygrammar")
+decoder.set_fsg('mygrammar', fsg)
+decoder.set_search('mygrammar')
 decoder.start_utt()
 
 with noalsaerr():
@@ -61,7 +61,7 @@ stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, fram
 stream.start_stream()
 in_speech_bf = True
 
-print "Start."
+print 'Start.'
 while True:
     buf = stream.read(1024)
     if buf:
