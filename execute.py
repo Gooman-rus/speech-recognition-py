@@ -9,10 +9,8 @@ from subprocess import call
 
 def speech_exec(line):
     """
-    checks the line and executes something
+    выполняет действия в зависимости от строки line
     """
-    if (line.find(u'тест') > -1):
-        call(["ls", "-l"])
 
     if (line.find(u'узи почк') > -1):
         webbrowser.open(getcwd() + '/res/kidney.jpg')
