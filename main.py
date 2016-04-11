@@ -64,9 +64,17 @@ fsg_gram = os.path.join(model_dir, 'speech_reconginition_project/gram.fsg')
 fsg.writefile(fsg_gram)
 config.set_string('-fsg', fsg_gram)
 
+
+#config.set_string('-keyphrase', 'включить')
+config.set_float('-kws_threshold', 1e-30)
+decoder = Decoder(config)
+decoder.set_keyphrase("kws", "активация")
+#decoder.set_search("kws")
+
+
 # переключиться на созданную грамматику
 decoder.set_fsg('mygrammar', fsg)
-decoder.set_search('mygrammar')
+# decoder.set_search('mygrammar')
 decoder.start_utt()
 
 with noalsaerr():
@@ -76,7 +84,24 @@ stream.start_stream()
 in_speech_bf = True
 
 print 'Start.'
+search_key_phrase = True
+change = True
 while True:
+    if (search_key_phrase and change):
+        change = False
+        decoder.end_utt()
+        decoder.set_search("kws")
+        decoder.start_utt()
+        print "test 1"
+
+    if (not search_key_phrase and change):
+        change = False
+        search_key_phrase = True
+        decoder.end_utt()
+        decoder.set_search('mygrammar')
+        decoder.start_utt()
+        print "test 2"
+
     buf = stream.read(1024)
     if buf:
         decoder.process_raw(buf, False, False)
@@ -89,6 +114,15 @@ while True:
                         # вывод декодированной строки на экран
                         str = decoder.hyp().hypstr.decode('utf-8')
                         print str
+                        if (str.find(u'активация') > -1):
+                            search_key_phrase = False
+                            change = True
+                            print "Say: "
+                        else:
+                            search_key_phrase = True
+                            change = True
+
+
                         # запуск функции для обработки распознанной фразы
                         speech_exec(str)
 
@@ -97,5 +131,7 @@ while True:
                 decoder.start_utt()
     else:
         break
+
 decoder.end_utt()
 print('An Error occured:', decoder.hyp().hypstr)
+
