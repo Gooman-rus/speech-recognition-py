@@ -12,19 +12,13 @@ from sphinxbase.sphinxbase import *
 from constants import *
 from execute import speech_exec
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
-
-# основная директория
-model_dir = '/home/yura/practics/'
+#script_dir = os.path.dirname(os.path.realpath(__file__))
 
 # путь к языковой модели
-hmm = os.path.join(model_dir, 'zero_ru_cont_8k_v3/zero_ru.cd_cont_4000')
-# lm = os.path.join(model_dir, "speech_reconginition_project/lmbase.lm.DMP")
+hmm = os.path.join(MODEL_DIR, 'zero_ru_cont_8k_v3/zero_ru.cd_cont_4000')
 
 # путь к словарю
-dict = os.path.join(model_dir, 'speech_reconginition_project/words.dict')
-
-# sys.stderr = open(os.path.join(script_dir, "stderr.log"), "a")
+dict = os.path.join(MODEL_DIR, 'speech_reconginition_project/words.dict')
 
 ERROR_HANDLER_FUNC = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
 def py_error_handler(filename, line, function, err, fmt):
@@ -50,18 +44,18 @@ config.set_string('-hmm', hmm)
 config.set_string('-dict', dict)
 
 # файл с логами
-config.set_string('-logfn', 'log.log')
+config.set_string('-logfn', '/dev/null')
 
 # обновление настроек декодера
 decoder = Decoder(config)
 
 # подключение грамматики в формате JSGF
-jsgf = Jsgf(os.path.join(model_dir, 'speech_reconginition_project/gram.jsgf'))
+jsgf = Jsgf(os.path.join(MODEL_DIR, 'speech_reconginition_project/gram.jsgf'))
 rule = jsgf.get_rule('mygrammar.query')
 
 # преобразование грамматики в формат FSG
 fsg = jsgf.build_fsg(rule, decoder.get_logmath(), 7.5)
-fsg_gram = os.path.join(model_dir, 'speech_reconginition_project/gram.fsg')
+fsg_gram = os.path.join(MODEL_DIR, 'speech_reconginition_project/gram.fsg')
 fsg.writefile(fsg_gram)
 config.set_string('-fsg', fsg_gram)
 
@@ -128,4 +122,3 @@ while True:
 
 decoder.end_utt()
 print('An Error occured:', decoder.hyp().hypstr)
-

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from Tkinter import *
+
 from os import getcwd
 
 import webbrowser
 from random import randint
-from subprocess import call
 
 
 def speech_exec(line):
