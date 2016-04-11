@@ -9,6 +9,7 @@ import pyaudio
 from pocketsphinx.pocketsphinx import *
 from sphinxbase.sphinxbase import *
 
+from constants import *
 from execute import speech_exec
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -65,12 +66,9 @@ fsg.writefile(fsg_gram)
 config.set_string('-fsg', fsg_gram)
 
 
-#config.set_string('-keyphrase', 'включить')
-config.set_float('-kws_threshold', 1e-30)
+config.set_float('-kws_threshold', KEY_PHRASE_THRESHOLD)
 decoder = Decoder(config)
-decoder.set_keyphrase("kws", "активация")
-#decoder.set_search("kws")
-
+decoder.set_keyphrase("kws", KEY_PHRASE)
 
 # переключиться на созданную грамматику
 decoder.set_fsg('mygrammar', fsg)
@@ -90,9 +88,9 @@ while True:
     if (search_key_phrase and change):
         change = False
         decoder.end_utt()
-        decoder.set_search("kws")
+        decoder.set_search('kws')
         decoder.start_utt()
-        print "test 1"
+        #print 'Waiting for the key phrase: '
 
     if (not search_key_phrase and change):
         change = False
@@ -100,7 +98,6 @@ while True:
         decoder.end_utt()
         decoder.set_search('mygrammar')
         decoder.start_utt()
-        print "test 2"
 
     buf = stream.read(1024)
     if buf:
@@ -111,20 +108,17 @@ while True:
                 decoder.end_utt()
                 try:
                     if decoder.hyp().hypstr != '':
-                        # вывод декодированной строки на экран
                         str = decoder.hyp().hypstr.decode('utf-8')
                         print str
-                        if (str.find(u'активация') > -1):
+                        if (str.find(KEY_PHRASE.decode('utf-8')) > -1):
                             search_key_phrase = False
                             change = True
-                            print "Say: "
+                            #print "Say: "
                         else:
                             search_key_phrase = True
                             change = True
-
-
-                        # запуск функции для обработки распознанной фразы
-                        speech_exec(str)
+                            # запуск функции для обработки распознанной фразы
+                            speech_exec(str)
 
                 except AttributeError:
                     pass
