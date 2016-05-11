@@ -11,6 +11,9 @@ def speech_exec(line):
     выполняет действия в зависимости от строки line
     """
 
+    if (line.find(u'отмена') > -1):
+        pass
+
     if (line.find(u'узи почк') > -1):
         webbrowser.open(getcwd() + '/res/kidney.jpg')
 
@@ -26,3 +29,4 @@ def speech_exec(line):
     if (line.find(u'давление') > -1):
         print randint(100, 160)
         print randint(40, 100)
+

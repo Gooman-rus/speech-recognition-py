@@ -15,10 +15,12 @@ from execute import speech_exec
 #script_dir = os.path.dirname(os.path.realpath(__file__))
 
 # путь к языковой модели
-hmm = os.path.join(MODEL_DIR, 'zero_ru_cont_8k_v3/zero_ru.cd_cont_4000')
+hmm = os.path.join(MODEL_DIR, 'zero_ru_cont_8k_v3/zero_ru.cd_ptm_4000')
 
 # путь к словарю
 dict = os.path.join(MODEL_DIR, 'speech_reconginition_project/words.dict')
+
+#lm = os.path.join(MODEL_DIR, 'speech_reconginition_project/sentences.lm.DMP')
 
 ERROR_HANDLER_FUNC = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
 def py_error_handler(filename, line, function, err, fmt):
@@ -45,6 +47,7 @@ config.set_string('-dict', dict)
 
 # файл с логами
 config.set_string('-logfn', '/dev/null')
+#config.set_string('-logfn', 'log.log')
 
 # обновление настроек декодера
 decoder = Decoder(config)
@@ -57,8 +60,8 @@ rule = jsgf.get_rule('mygrammar.query')
 fsg = jsgf.build_fsg(rule, decoder.get_logmath(), 7.5)
 fsg_gram = os.path.join(MODEL_DIR, 'speech_reconginition_project/gram.fsg')
 fsg.writefile(fsg_gram)
-config.set_string('-fsg', fsg_gram)
 
+config.set_float("-vad_threshold", 3.0)
 
 config.set_float('-kws_threshold', KEY_PHRASE_THRESHOLD)
 decoder = Decoder(config)
@@ -66,7 +69,7 @@ decoder.set_keyphrase("kws", KEY_PHRASE)
 
 # переключиться на созданную грамматику
 decoder.set_fsg('mygrammar', fsg)
-# decoder.set_search('mygrammar')
+decoder.set_search('mygrammar')
 decoder.start_utt()
 
 with noalsaerr():
